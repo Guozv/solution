@@ -35,17 +35,15 @@ inline void solve()
 		c[i][0]=1;
 		for(int j=1;j<=i;j++)MOD(c[i][j]=c[i-1][j-1]+c[i-1][j]);
 	}
-	for(int i=1;i<=n;i++)
-	{
-		F[i][i]=po[i];
-		for(int j=1;j<=i;j++)
-		{
-			for(int k=0;k<i;k++)
-			{
-				MOD(F[i][j]+=mul(F[k][j-(i-k)]));
-			}
-		}
-	}
+	
+	for(int i=1;i<=n;i++)F[i][1]=po[i-1];
+    for(int i=1;i<=n;i++)
+		for(int j=2;j<=i;j++)
+    		for(int k=1;k<i-1;k++)
+				MOD(F[i][j]+=mul(po[i-k-2],c[i-j+1][i-k-1],F[k][j-1]));
+	int ans=0;
+	for(int i=0;i<=n;i++)MOD(ans+=F[n][i]);
+	cout<<ans<<endl;
 }
 int main()
 {
