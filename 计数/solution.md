@@ -39,3 +39,21 @@ $$dp[i][j]=dp[i-1][j]+[a_i\le j \le b_i]\sum_{k=1}^{j-1}dp[i-1][k]$$
 
 以此可以很快写出转移方程。
 
+# P9823 [ICPC 2020 Shanghai R] The Journey of Geor Autumn
+
+考虑 1 的位置
+
+设 1 在位置 $x,x\ le k$ 
+
+则有前 x 个数的位置是可以随便放的。
+
+然后 $[x+1,x+k]$ 区间里的数也是可以随便放的
+
+所以这里相当于一个子问题，我们还是需要吧最小值放到前 k 个位置。
+
+所以有 
+
+$$
+f_n=\sum_{x=1}^{\min(n,k)}(x-1)!\binom{n-1}{x-1}f_{n-x}\\
+=\sum_{x=1}^{\min(n,k)}\frac{(n-1)!}{(n-x)!}f_{n-x}
+$$
