@@ -71,3 +71,85 @@ $$
 $F[x-1][l][r]\to F[x][\min(l,pos_x)][\max(pos_x+1,r)]$
 
 否则枚举出现位置，前缀和优化一下就行。
+
+# P6944 [ICPC 2018 WF] Gem Island
+
+设结束后每个人有 $a_i$ 个宝石，想要达成这种分配方式的方案数其实就是隔板法，是确定可算的，算出来没种分配方式都是等概率的。
+
+所以我们计算所有分配方式前 $r$ 大数的和即可以及分配方式总数即可。
+
+这里的分配本质就是 $d$ 分配到 $n$ 个数上。
+
+使用拆分数 dp $F[i][j]$ 表示和为 $i$ 有 $j$ 个最大值的方案数。
+
+每次只增加最大值，直到分配 完 d 个数。
+
+
+当然，这道题二项式反演是更直观的做法。
+
+设在所有的合法的 $a$ 中，有 $F[i][j]$ 表示有 $i$ 个数大于等于 $j$。
+
+可以发现答案就是 $\sum_{i,j}\min(i,k)F[i][j]$
+
+设 $g$ 为钦定有 i 个数大于等于 j
+
+$$
+g[i][j]=\binom{n}{i}\binom{d-ij+n-1}{n-1}
+$$
+
+对 f 进行二项式反演：
+$$
+ F[k][j]=\sum_{i\ge k}(-1)^{i-k}\binom{i}{k}g[i][j]=\\
+ \sum_{i\ge k}(-1)^{i-k}\binom{i}{k}\binom{n}{i}\binom{d-ij+n-1}{n-1}
+$$
+
+这个式子已经能通过了。
+
+可以枚举 $j$ 进行计算
+
+这个式子还能进一步优化：
+
+$$
+\sum_k\min(k,r)\sum_{i\ge k}(-1)^{i-k}\binom{i}{k}\binom{n}{i}\sum_{j}\binom{d-ij+n-1}{n-1}
+$$
+
+稍微交换一下求和顺序：
+
+$$
+\sum_{i}\binom{n}{i}(\sum_{j}\binom{d-ij+n-1}{n-1})(\sum_k (-1)^{i-k}\binom{i}{k}\min(k,r))
+$$
+
+j k 的求和明显可以分开来算。
+
+对 $j$ 的设：
+$$
+g(i)=\sum_{j}\binom{d-ij+n-1}{n-1}
+\\
+z(k)=\binom{d-k+n-1}{n-1}
+\\ 有\\
+g(i)=\sum_{i|k}z(k)
+$$
+
+可以 $\text{dirichlet}$ 后缀和求出所有 $g(i)$
+
+对于 $k$ 的部分：
+$$
+\sum_k (-1)^{i-k}\binom{i}{k}\min(k,r)=\\
+\sum_{k=1}^{\min(d,r)}k(-1)^k\binom{i}{k}+r\sum_{k=r+1}^d(-1)^k\binom{i}{k}\\=
+\sum_{k=1}^{\min(d,r)}i(-1)^k\binom{i-1}{k-1}+r\sum_{k=r+1}^d(-1)^k\binom{i}{k}\\
+=\sum_{k=0}^{\min(d,r)-1}i(-1)^{k-1}\binom{i-1}{k}+r\sum_{k=r+1}^d(-1)^k\binom{i}{k}
+$$
+
+有组合恒等式：
+
+$$
+    \sum_{k=0}^m(-1)^k\binom{n}{k}=(-1)^m\binom{n-1}{m}
+$$
+
+则能化简为
+
+$$
+i(-1)^{\min(d,r)}\binom{i-2}{\min(d,r)-1}+r((-1)^d\binom{i-1}d-(-1)^r\binom{i-1}r)
+$$
+
+做到 $O(n)$ 的复杂度。
